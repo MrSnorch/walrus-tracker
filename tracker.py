@@ -137,16 +137,19 @@ def retrigger_next_run():
     repo = os.environ["GITHUB_REPOSITORY"]
     ref = os.environ["GITHUB_REF_NAME"]
     token = os.environ["GH_TOKEN"]
-    r = requests.post(
-        f"https://api.github.com/repos/{repo}/actions/workflows/tracker.yml/dispatches",
-        headers={
-            "Authorization": f"Bearer {token}",
-            "Accept": "application/vnd.github+json",
-        },
-        json={"ref": ref},
-        timeout=15,
-    )
-    r.raise_for_status()
+    try:
+        r = requests.post(
+            f"https://api.github.com/repos/{repo}/actions/workflows/tracker.yml/dispatches",
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Accept": "application/vnd.github+json",
+            },
+            json={"ref": ref},
+            timeout=15,
+        )
+        r.raise_for_status()
+    except Exception as e:
+        print(f"Failed to retrigger next run (will rely on schedule safety net): {e}")
 
 
 def main():
