@@ -3,6 +3,7 @@ import json
 import time
 import subprocess
 import requests
+from datetime import datetime, timezone
 
 ITEM_ID = 478
 ITEM_TYPE = "collectibles"
@@ -58,7 +59,9 @@ def format_summary(data):
     listings = sorted(data.get("listings", []), key=lambda x: x["sfl"])
     offers = sorted(data.get("offers", []), key=lambda x: -x["sfl"])
 
-    lines = [f"<b>Item #{ITEM_ID} — листинги и офферы</b>", ""]
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+
+    lines = [f"<b>Item #{ITEM_ID} — листинги и офферы</b>", f"Последний скан: {now}", ""]
     lines.append(f"<b>Листинги ({len(listings)}):</b>")
     if listings:
         for l in listings:
