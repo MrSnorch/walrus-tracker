@@ -133,7 +133,25 @@ def check_once(state):
     save_state(state)
 
 
+def retrigger_next_run():
+    repo = os.environ["GITHUB_REPOSITORY"]
+    ref = os.environ["GITHUB_REF_NAME"]
+    token = os.environ["GH_TOKEN"]
+    r = requests.post(
+        f"https://api.github.com/repos/{repo}/actions/workflows/tracker.yml/dispatches",
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/vnd.github+json",
+        },
+        json={"ref": ref},
+        timeout=15,
+    )
+    r.raise_for_status()
+
+
 def main():
+    retrigger_next_run()  # start the next run immediately, don't wait 6h
+
     state = load_state()
     end_time = time.time() + 6 * 60 * 60  # 6 hours
 
