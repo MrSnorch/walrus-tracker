@@ -35,13 +35,5 @@ jobs:
           SFL_TOKEN: ${{ secrets.SFL_TOKEN }}
           TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python tracker.py
-
-      - name: Retrigger next run
-        if: always()
-        run: |
-          curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github+json" \
-            https://api.github.com/repos/${{ github.repository }}/actions/workflows/tracker.yml/dispatches \
-            -d '{"ref":"${{ github.ref_name }}"}'
