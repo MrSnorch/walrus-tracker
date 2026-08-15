@@ -1,6 +1,7 @@
 import os
 import json
 import time
+import subprocess
 import requests
 
 ITEM_ID = 478
@@ -26,6 +27,17 @@ def load_state():
 def save_state(state):
     with open(STATE_PATH, "w", encoding="utf-8") as f:
         json.dump(state, f, ensure_ascii=False, indent=2)
+    commit_state()
+
+
+def commit_state():
+    subprocess.run(["git", "add", STATE_PATH], check=True)
+    diff = subprocess.run(["git", "diff", "--cached", "--quiet"])
+    if diff.returncode == 0:
+        return  # nothing changed
+    subprocess.run(["git", "commit", "-m", "Update state [skip ci]"], check=True)
+    subprocess.run(["git", "pull", "--rebase"], check=True)
+    subprocess.run(["git", "push"], check=True)
 
 
 def fetch_market():
